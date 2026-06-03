@@ -2,7 +2,9 @@ import concurrent.futures
 import os
 from pathlib import Path
 
-from qiskit import QuantumCircuit
+import numpy as np
+
+from qiskit import QuantumCircuit, qasm3
 
 from main import (
     compute_fidelity,
@@ -49,7 +51,10 @@ def run_single_qasm_try(qasm_path: str, try_number: int) -> None:
     with open(output_path, "w", encoding="utf-8") as _f:
         _f.write("")
 
+    # QASM 2.0
     qc = QuantumCircuit.from_qasm_file(str(qasm_file))
+    # QASM 3.0
+    # qc = qasm3.load(str(qasm_file))
     num_qubits = qc.num_qubits
     depth = qc.depth()
 
@@ -65,7 +70,7 @@ def run_single_qasm_try(qasm_path: str, try_number: int) -> None:
 
     state = compute_statevector(qc)
     print_header("State Vector:", output_path)
-    print_text(state.data, output_path)
+    print_text(array_to_string(state.data), output_path)
 
     probabilities = compute_measurement_probabilities(state)
     measurement_probabilities = ""
@@ -79,7 +84,7 @@ def run_single_qasm_try(qasm_path: str, try_number: int) -> None:
     circuit_json = prompt_helper.execute_prompt(
         f"Target circuit source file: {qasm_file.name}\n\n"
         f"Target probability distribution:\n{measurement_probabilities}\n\n"
-        f"Target state vector:\n{state.data}"
+        f"Target state vector:\n{array_to_string(state.data)}"
     )
 
     if circuit_json is None:
@@ -93,7 +98,7 @@ def run_single_qasm_try(qasm_path: str, try_number: int) -> None:
 
     state_llm = compute_statevector(qc_llm)
     print_header("State Vector from LLM-Generated Circuit:", output_path)
-    print_text(state_llm.data, output_path)
+    print_text(array_to_string(state_llm.data), output_path)
 
     probabilities_llm = compute_measurement_probabilities(state_llm)
     measurement_probabilities_llm = ""
@@ -129,7 +134,7 @@ Probability distribution from previous LLM-generated circuit:
 {measurement_probabilities_new}
 
 State vector from previous LLM-generated circuit:
-{state_llm_new.data}
+{array_to_string(state_llm_new.data)}
 
 Target circuit source file:
 {qasm_file.name}
@@ -138,7 +143,7 @@ Target probability distribution:
 {measurement_probabilities}
 
 Target state vector:
-{state.data}
+{array_to_string(state.data)}
 """
 
         circuit_json_new = prompt_helper.execute_prompt(prompt)
@@ -154,7 +159,7 @@ Target state vector:
 
         state_llm_new = compute_statevector(qc_llm_new)
         print_header("State Vector from LLM-Generated Circuit:", output_path)
-        print_text(state_llm_new.data, output_path)
+        print_text(array_to_string(state_llm_new.data), output_path)
 
         probabilities_new = compute_measurement_probabilities(state_llm_new)
         measurement_probabilities_new = ""
@@ -169,6 +174,8 @@ Target state vector:
         print_text(f"{fidelity_new:.4f}", output_path)
         i += 1
 
+def array_to_string(arr):
+    return np.array2string(arr, threshold=np.inf, precision=6, separator=" ")
 
 def main() -> None:
     jobs = []

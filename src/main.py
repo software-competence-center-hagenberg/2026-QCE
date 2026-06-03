@@ -18,9 +18,8 @@ def format_statevector(state) -> str:
     return np.array2string(
         sv,
         threshold=np.inf,
-        max_line_width=200,
         precision=6,
-        separator=", ",
+        separator="  ",
     )
 
 
