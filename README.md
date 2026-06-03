@@ -9,10 +9,10 @@
 
 This repository contains the code and data for the paper *"Is Your Quantum Circuit Synthesis Benchmark LLM-Ready?"*, submitted to **QCE26: 2026 IEEE International Conference on Quantum Computing & Engineering** (Metro Toronto Convention Centre, Toronto, Canada, September 13–18, 2026).
 
-The project benchmarks large language models (LLMs) on the task of quantum circuit synthesis — given a target circuit's statevector and measurement probabilities, can an LLM generate an approximating circuit using only explicit quantum gates? Two models were evaluated:
+The project benchmarks large language models (LLMs) on the task of quantum circuit synthesis, given a target circuit's statevector and measurement probabilities, can an LLM generate an approximating circuit using only explicit quantum gates? Two models were evaluated:
 
-- **GPT-5.5** — called via the official OpenAI API
-- **Qwen 3.6** — self-hosted
+- **GPT-5.5** (called via the official OpenAI API)
+- **Qwen 3.6** (self-hosted)
 
 ## Requirements
 
